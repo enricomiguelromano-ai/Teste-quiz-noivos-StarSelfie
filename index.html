@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Quiz dos Noivos - Arthur & Ana</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Montserrat:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- TELA INICIAL -->
+    <section id="start" class="screen active">
+
+        <div class="card">
+
+            <div class="photo">
+                IMAGEM_NOIVOS
+            </div>
+
+            <h1 class="names">
+                Arthur & Ana
+            </h1>
+
+            <div class="divider"></div>
+
+            <h2 class="title">
+                Quiz dos Noivos
+            </h2>
+
+            <p class="subtitle">
+                Será que você conhece bem o casal?
+            </p>
+
+            <button onclick="show('name')">
+                ▶ COMEÇAR
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- TELA DO NOME -->
+    <section id="name" class="screen">
+
+        <div class="card">
+
+            <h2 class="title">
+                Antes de começar...
+            </h2>
+
+            <p class="subtitle">
+                Qual é o seu nome?
+            </p>
+
+            <input
+                id="playerName"
+                class="name-input"
+                type="text"
+                placeholder="Digite seu nome"
+                maxlength="25"
+            >
+
+            <button onclick="startQuiz()">
+                CONTINUAR →
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- TELA DO QUIZ -->
+    <section id="quiz" class="screen">
+
+        <div class="card">
+
+            <div class="question-box">
+
+                <div id="progress" class="progress">
+                    PERGUNTA 1 DE 6
+                </div>
+
+                <h2 id="question" class="question">
+                    Pergunta
+                </h2>
+
+                <div id="answers" class="answers">
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- FEEDBACK -->
+    <div id="feedback" class="feedback">
+
+        <div class="feedback-card">
+
+            <div id="feedbackIcon" class="feedback-icon">
+                ✓
+            </div>
+
+            <h2 id="feedbackTitle" class="feedback-title">
+                Acertou!
+            </h2>
+
+            <p id="feedbackPoints" class="feedback-points">
+                +100 pontos
+            </p>
+
+            <button onclick="continueAfterFeedback()">
+                CONTINUAR →
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- RESULTADO -->
+    <section id="result" class="screen">
+
+        <div class="card">
+
+            <h2 class="title">
+                Parabéns!
+            </h2>
+
+            <p id="resultName" class="subtitle">
+                Jogador
+            </p>
+
+            <div id="resultPoints" class="result-points">
+                0
+            </div>
+
+            <p class="subtitle">
+                pontos
+            </p>
+
+            <button onclick="showRanking()">
+                VER RANKING
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- RANKING -->
+    <section id="ranking" class="screen">
+
+        <div class="card">
+
+            <h2 class="title">
+                Ranking
+            </h2>
+
+            <p class="subtitle">
+                Os maiores conhecedores do casal
+            </p>
+
+            <div id="rankingList" class="ranking">
+            </div>
+
+            <button
+                class="secondary"
+                onclick="show('start')"
+            >
+                VOLTAR AO INÍCIO
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <script src="script.js"></script>
+
+</body>
+</html>
