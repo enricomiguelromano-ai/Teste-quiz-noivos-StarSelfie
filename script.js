@@ -95,6 +95,359 @@ let score = 0;
 
 let player = "";
 
+let audioCtx = null;
+
+
+/* ========================================
+   ÁUDIO (sons sintetizados, sem arquivos)
+======================================== */
+
+function getAudioCtx() {
+
+    if (!audioCtx) {
+
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    }
+
+    if (audioCtx.state === "suspended") {
+
+        audioCtx.resume();
+
+    }
+
+    return audioCtx;
+
+}
+
+
+function playTone(freqs, duration, wave, volume) {
+
+    try {
+
+        const ctx = getAudioCtx();
+
+        freqs.forEach((freq, i) => {
+
+            const osc = ctx.createOscillator();
+
+            const gain = ctx.createGain();
+
+            osc.type = wave || "sine";
+
+            osc.frequency.value = freq;
+
+            osc.connect(gain);
+
+            gain.connect(ctx.destination);
+
+
+            const start = ctx.currentTime + i * duration;
+
+            gain.gain.setValueAtTime(volume || 0.22, start);
+
+            gain.gain.exponentialRampToValueAtTime(0.001, start + duration);
+
+
+            osc.start(start);
+
+            osc.stop(start + duration);
+
+        });
+
+    } catch (e) {
+
+        /* áudio indisponível, ignora silenciosamente */
+
+    }
+
+}
+
+
+function playSound(type) {
+
+    if (type === "correct") {
+
+        playTone([523.25, 659.25, 783.99], 0.13, "sine", 0.25);
+
+    }
+
+    else if (type === "wrong") {
+
+        playTone([196.0, 146.83], 0.2, "sawtooth", 0.2);
+
+    }
+
+    else if (type === "click") {
+
+        playTone([440], 0.06, "sine", 0.14);
+
+    }
+
+    else if (type === "fanfare") {
+
+        playTone(
+            [523.25, 659.25, 783.99, 1046.5],
+            0.16,
+            "triangle",
+            0.28
+        );
+
+    }
+
+}
+
+
+/* ========================================
+   CONFETE
+======================================== */
+
+function launchConfetti(count, big) {
+
+    const container = document.createElement("div");
+
+    container.className = "confetti-container";
+
+    document.body.appendChild(container);
+
+
+    const colors = big
+
+        ? ["#C8A96B", "#E5D2A5", "#F7F3EC", "#4CAF50", "#ffffff", "#E05353"]
+
+        : ["#C8A96B", "#E5D2A5", "#4CAF50"];
+
+
+    for (let i = 0; i < count; i++) {
+
+        const piece = document.createElement("div");
+
+        piece.className = "confetti-piece";
+
+        piece.style.left = Math.random() * 100 + "%";
+
+        piece.style.background =
+            colors[Math.floor(Math.random() * colors.length)];
+
+        piece.style.animationDuration =
+            (1.4 + Math.random() * 1.3) + "s";
+
+        piece.style.animationDelay =
+            (Math.random() * 0.35) + "s";
+
+        piece.style.setProperty(
+            "--rot",
+            (Math.random() * 360 + 180) + "deg"
+        );
+
+        container.appendChild(piece);
+
+    }
+
+
+    setTimeout(() => container.remove(), 3200);
+
+}
+
+
+/* ========================================
+   RIPPLE NOS BOTÕES
+======================================== */
+
+function addRipple(e) {
+
+    const btn = e.currentTarget;
+
+    const circle = document.createElement("span");
+
+    const diameter = Math.max(btn.clientWidth, btn.clientHeight);
+
+    const rect = btn.getBoundingClientRect();
+
+
+    circle.style.width = circle.style.height = diameter + "px";
+
+    circle.style.left = (e.clientX - rect.left - diameter / 2) + "px";
+
+    circle.style.top = (e.clientY - rect.top - diameter / 2) + "px";
+
+    circle.className = "ripple";
+
+
+    const old = btn.querySelector(".ripple");
+
+    if (old) old.remove();
+
+
+    btn.appendChild(circle);
+
+    setTimeout(() => circle.remove(), 650);
+
+}
+
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    document.querySelectorAll("button").forEach(btn => {
+
+        btn.addEventListener("click", addRipple);
+
+    });
+
+
+    startSparkles();
+
+});
+
+
+/* ========================================
+   PARTÍCULAS FLUTUANTES DE FUNDO
+======================================== */
+
+function startSparkles() {
+
+    const holder = document.getElementById("sparkles");
+
+    if (!holder) return;
+
+
+    function spawn() {
+
+        const s = document.createElement("div");
+
+        s.className = "sparkle";
+
+        s.style.left = Math.random() * 100 + "%";
+
+        s.style.setProperty(
+            "--drift",
+            (Math.random() * 80 - 40) + "px"
+        );
+
+        s.style.animationDuration = (6 + Math.random() * 6) + "s";
+
+        holder.appendChild(s);
+
+
+        setTimeout(() => s.remove(), 13000);
+
+    }
+
+
+    for (let i = 0; i < 6; i++) {
+
+        setTimeout(spawn, i * 900);
+
+    }
+
+
+    setInterval(spawn, 1400);
+
+}
+
+
+/* ========================================
+   TELA CHEIA
+======================================== */
+
+function toggleFullscreen() {
+
+    playSound("click");
+
+    const el = document.documentElement;
+
+    const isFullscreen =
+        document.fullscreenElement ||
+        document.webkitFullscreenElement ||
+        document.msFullscreenElement;
+
+
+    if (!isFullscreen) {
+
+        const request =
+            el.requestFullscreen ||
+            el.webkitRequestFullscreen ||
+            el.msRequestFullscreen;
+
+        if (request) request.call(el);
+
+    }
+
+    else {
+
+        const exit =
+            document.exitFullscreen ||
+            document.webkitExitFullscreen ||
+            document.msExitFullscreen;
+
+        if (exit) exit.call(document);
+
+    }
+
+}
+
+
+["fullscreenchange", "webkitfullscreenchange", "msfullscreenchange"]
+    .forEach(evt => {
+
+        document.addEventListener(evt, () => {
+
+            const btn = document.getElementById("fullscreenBtn");
+
+            if (!btn) return;
+
+
+            const isFullscreen =
+                document.fullscreenElement ||
+                document.webkitFullscreenElement ||
+                document.msFullscreenElement;
+
+            btn.textContent = isFullscreen ? "⤫" : "⛶";
+
+        });
+
+    });
+
+
+/* ========================================
+   CONTAGEM ANIMADA DE NÚMEROS
+======================================== */
+
+function animateNumber(el, target, duration) {
+
+    const start = performance.now();
+
+    const dur = duration || 900;
+
+
+    function step(now) {
+
+        const progress = Math.min((now - start) / dur, 1);
+
+        const eased = 1 - Math.pow(1 - progress, 3);
+
+        el.textContent = Math.round(target * eased);
+
+
+        if (progress < 1) {
+
+            requestAnimationFrame(step);
+
+        }
+
+        else {
+
+            el.textContent = target;
+
+        }
+
+    }
+
+
+    requestAnimationFrame(step);
+
+}
+
 
 /* ========================================
    TROCAR DE TELA
@@ -102,18 +455,54 @@ let player = "";
 
 function show(id) {
 
-    document
-        .querySelectorAll(".screen")
-        .forEach(screen => {
+    const currentScreen =
+        document.querySelector(".screen.active");
 
-            screen.classList.remove("active");
+    const nextScreen =
+        document.getElementById(id);
+
+
+    if (currentScreen === nextScreen) return;
+
+
+    if (currentScreen) {
+
+        currentScreen.classList.remove("active");
+
+        currentScreen.classList.add("screen-exit");
+
+
+        setTimeout(() => {
+
+            currentScreen.classList.remove("screen-exit");
+
+        }, 450);
+
+    }
+
+
+    nextScreen.classList.add("active", "screen-enter");
+
+
+    setTimeout(() => {
+
+        nextScreen.classList.remove("screen-enter");
+
+
+        /*
+            Reengancha o ripple em botões
+            criados dinamicamente
+        */
+
+        nextScreen.querySelectorAll("button").forEach(btn => {
+
+            btn.removeEventListener("click", addRipple);
+
+            btn.addEventListener("click", addRipple);
 
         });
 
-
-    document
-        .getElementById(id)
-        .classList.add("active");
+    }, 500);
 
 }
 
@@ -231,6 +620,16 @@ function renderQuestion() {
         `PERGUNTA ${current + 1} DE ${questions.length}`;
 
 
+    const fill = document.getElementById("progressFill");
+
+    if (fill) {
+
+        fill.style.width =
+            (current / questions.length) * 100 + "%";
+
+    }
+
+
     document
         .getElementById("question")
         .textContent = item.q;
@@ -262,9 +661,14 @@ function renderQuestion() {
         btn.textContent = text;
 
 
-        btn.onclick = () => {
+        btn.addEventListener("click", addRipple);
 
-            answer(i);
+
+        btn.onclick = (e) => {
+
+            addRipple(e);
+
+            answer(i, btn);
 
         };
 
@@ -280,36 +684,90 @@ function renderQuestion() {
    RESPONDER
 ======================================== */
 
-function answer(choice) {
+function answer(choice, btnEl) {
 
-    const correct =
-        choice === questions[current].correct;
+    const correctIndex = questions[current].correct;
+
+    const correct = choice === correctIndex;
+
+
+    const allButtons =
+        document.querySelectorAll("#answers .answer");
+
+
+    /*
+        Trava as respostas para não
+        clicar duas vezes
+    */
+
+    allButtons.forEach(b => (b.disabled = true));
 
 
     if (correct) {
 
-        /*
-            Cada acerto vale 100 pontos
-        */
+        btnEl.classList.add("correct-flash");
 
-        score += 100;
+        playSound("correct");
 
-
-        showFeedback(
-            true,
-            100
-        );
+        launchConfetti(18, false);
 
     }
 
     else {
 
-        showFeedback(
-            false,
-            0
-        );
+        btnEl.classList.add("wrong-flash");
+
+
+        /*
+            Mostra qual era a resposta certa
+        */
+
+        if (allButtons[correctIndex]) {
+
+            allButtons[correctIndex]
+                .classList.add("correct-flash");
+
+        }
+
+
+        playSound("wrong");
 
     }
+
+
+    /*
+        Aguarda a animação antes de
+        abrir o feedback
+    */
+
+    setTimeout(() => {
+
+        if (correct) {
+
+            /*
+                Cada acerto vale 100 pontos
+            */
+
+            score += 100;
+
+
+            showFeedback(
+                true,
+                100
+            );
+
+        }
+
+        else {
+
+            showFeedback(
+                false,
+                0
+            );
+
+        }
+
+    }, 550);
 
 }
 
@@ -403,12 +861,22 @@ function continueAfterFeedback() {
             .textContent = player;
 
 
-        document
-            .getElementById("resultPoints")
-            .textContent = score;
-
-
         show("result");
+
+
+        const pointsEl =
+            document.getElementById("resultPoints");
+
+
+        setTimeout(() => {
+
+            playSound("fanfare");
+
+            launchConfetti(60, true);
+
+            animateNumber(pointsEl, score, 1200);
+
+        }, 350);
 
     }
 

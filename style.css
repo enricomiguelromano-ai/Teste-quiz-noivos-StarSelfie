@@ -15,10 +15,130 @@ body {
     margin: 0;
     min-height: 100vh;
 
-    background: var(--cream);
+    background: linear-gradient(
+        120deg,
+        var(--cream),
+        var(--soft),
+        var(--cream)
+    );
+    background-size: 300% 300%;
+    animation: bgShift 18s ease infinite;
+
     color: var(--text);
 
     font-family: "Montserrat", sans-serif;
+
+    overflow-x: hidden;
+    position: relative;
+}
+
+@keyframes bgShift {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+
+/* =========================
+   PARTÍCULAS FLUTUANTES
+========================= */
+
+.sparkles {
+    position: fixed;
+    inset: 0;
+
+    pointer-events: none;
+
+    overflow: hidden;
+
+    z-index: 0;
+}
+
+.sparkle {
+    position: absolute;
+
+    bottom: -20px;
+
+    width: 6px;
+    height: 6px;
+
+    border-radius: 50%;
+
+    background: var(--gold-light);
+
+    opacity: 0.55;
+
+    animation-name: floatUp;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+
+@keyframes floatUp {
+    0% {
+        transform: translateY(0) translateX(0) scale(0.6);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.6;
+    }
+    90% {
+        opacity: 0.5;
+    }
+    100% {
+        transform: translateY(-110vh) translateX(var(--drift, 20px)) scale(1);
+        opacity: 0;
+    }
+}
+
+
+/* =========================
+   BOTÃO TELA CHEIA
+========================= */
+
+.fullscreen-btn {
+    position: fixed;
+
+    top: 18px;
+    right: 18px;
+
+    z-index: 60;
+
+    width: 52px;
+    height: 52px;
+
+    min-width: 0;
+
+    padding: 0;
+
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.85);
+
+    color: var(--gold);
+
+    font-size: 22px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-shadow: 0 8px 20px rgba(80, 60, 30, 0.12);
+
+    backdrop-filter: blur(6px);
+
+    transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease;
+}
+
+.fullscreen-btn:hover {
+    transform: scale(1.1) rotate(8deg);
+
+    background: var(--gold);
+
+    color: var(--white);
+}
+
+.fullscreen-btn:active {
+    transform: scale(0.94);
 }
 
 
@@ -35,10 +155,45 @@ body {
     justify-content: center;
 
     padding: 40px 22px;
+
+    position: relative;
+    z-index: 1;
 }
 
 .screen.active {
     display: flex;
+}
+
+.screen.screen-exit {
+    display: flex;
+
+    animation: slideOutLeft 0.45s ease forwards;
+}
+
+.screen.screen-enter {
+    animation: slideInRight 0.5s ease;
+}
+
+@keyframes slideOutLeft {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(-60px);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(60px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 
@@ -50,6 +205,19 @@ body {
     width: min(100%, 900px);
 
     text-align: center;
+
+    animation: cardPop 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes cardPop {
+    from {
+        opacity: 0;
+        transform: scale(0.92) translateY(14px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
 }
 
 
@@ -66,7 +234,14 @@ body {
     border: 2px dashed var(--gold);
     border-radius: 22px;
 
-    background: var(--white);
+    background: linear-gradient(
+        100deg,
+        var(--white) 40%,
+        var(--gold-light) 50%,
+        var(--white) 60%
+    );
+    background-size: 250% 100%;
+    animation: shimmer 3.2s ease-in-out infinite;
 
     display: flex;
     align-items: center;
@@ -77,6 +252,11 @@ body {
     font-weight: 600;
 
     letter-spacing: 1px;
+}
+
+@keyframes shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -50% 0; }
 }
 
 
@@ -155,11 +335,30 @@ button {
 
     box-shadow: 0 8px 20px rgba(80, 60, 30, 0.12);
 
-    transition: 0.2s;
+    transition: transform 0.2s, box-shadow 0.2s;
+
+    position: relative;
+
+    overflow: hidden;
+
+    animation: pulseGlow 2.6s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+    0%, 100% {
+        box-shadow: 0 8px 20px rgba(80, 60, 30, 0.12);
+    }
+    50% {
+        box-shadow: 0 8px 26px rgba(200, 169, 107, 0.45);
+    }
 }
 
 button:hover {
     transform: translateY(-2px);
+}
+
+button:active {
+    transform: translateY(0) scale(0.97);
 }
 
 button.secondary {
@@ -168,6 +367,29 @@ button.secondary {
     color: var(--text);
 
     border: 1px solid var(--gold-light);
+
+    animation: none;
+}
+
+.ripple {
+    position: absolute;
+
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.55);
+
+    transform: scale(0);
+
+    animation: rippleAnim 0.6s ease-out;
+
+    pointer-events: none;
+}
+
+@keyframes rippleAnim {
+    to {
+        transform: scale(3.5);
+        opacity: 0;
+    }
 }
 
 
@@ -220,7 +442,33 @@ button.secondary {
 
     font-weight: 700;
 
-    margin-bottom: 15px;
+    margin-bottom: 10px;
+}
+
+.progress-bar {
+    width: 100%;
+
+    height: 8px;
+
+    background: var(--soft);
+
+    border-radius: 999px;
+
+    overflow: hidden;
+
+    margin-bottom: 24px;
+}
+
+.progress-fill {
+    height: 100%;
+
+    width: 0%;
+
+    border-radius: 999px;
+
+    background: linear-gradient(90deg, var(--gold-light), var(--gold));
+
+    transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .question {
@@ -256,12 +504,68 @@ button.secondary {
     border: 2px solid transparent;
 
     box-shadow: none;
+
+    animation: answerIn 0.4s ease backwards;
+}
+
+.answer:nth-child(1) { animation-delay: 0.05s; }
+.answer:nth-child(2) { animation-delay: 0.12s; }
+.answer:nth-child(3) { animation-delay: 0.19s; }
+.answer:nth-child(4) { animation-delay: 0.26s; }
+
+@keyframes answerIn {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .answer:hover {
     border-color: var(--gold);
 
-    transform: none;
+    transform: translateY(-2px);
+}
+
+.answer:disabled {
+    cursor: default;
+}
+
+.answer.correct-flash {
+    background: #DFF3E1 !important;
+
+    border-color: #4CAF50 !important;
+
+    color: #1F6B2B;
+
+    animation: correctPulse 0.5s ease !important;
+}
+
+.answer.wrong-flash {
+    background: #FBE1E1 !important;
+
+    border-color: #E05353 !important;
+
+    color: #9C2626;
+
+    animation: wrongShake 0.5s ease !important;
+}
+
+@keyframes correctPulse {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+@keyframes wrongShake {
+    0%, 100% { transform: translateX(0); }
+    20%      { transform: translateX(-8px); }
+    40%      { transform: translateX(8px); }
+    60%      { transform: translateX(-6px); }
+    80%      { transform: translateX(6px); }
 }
 
 
@@ -311,6 +615,16 @@ button.secondary {
     font-size: 54px;
 
     margin-bottom: 8px;
+
+    display: inline-block;
+
+    animation: iconBounce 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes iconBounce {
+    0%   { transform: scale(0) rotate(-15deg); opacity: 0; }
+    60%  { transform: scale(1.25) rotate(8deg); opacity: 1; }
+    100% { transform: scale(1) rotate(0deg); }
 }
 
 .feedback-title {
@@ -359,6 +673,64 @@ button.secondary {
     font-weight: 700;
 
     margin: 5px 0 25px;
+
+    animation: resultPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes resultPop {
+    from {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+
+/* =========================
+   CONFETE
+========================= */
+
+.confetti-container {
+    position: fixed;
+
+    inset: 0;
+
+    pointer-events: none;
+
+    overflow: hidden;
+
+    z-index: 200;
+}
+
+.confetti-piece {
+    position: absolute;
+
+    top: -20px;
+
+    width: 9px;
+    height: 15px;
+
+    opacity: 0.95;
+
+    border-radius: 2px;
+
+    animation-name: confettiFall;
+    animation-timing-function: ease-in;
+    animation-fill-mode: forwards;
+}
+
+@keyframes confettiFall {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(105vh) rotate(var(--rot, 360deg));
+        opacity: 0;
+    }
 }
 
 
@@ -391,10 +763,23 @@ button.secondary {
     border-bottom: 1px solid #eee;
 
     text-align: left;
+
+    animation: rowIn 0.4s ease backwards;
 }
 
 .rank-row:last-child {
     border-bottom: 0;
+}
+
+@keyframes rowIn {
+    from {
+        opacity: 0;
+        transform: translateX(-16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 .rank-row.header {

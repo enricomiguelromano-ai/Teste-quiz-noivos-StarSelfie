@@ -19,6 +19,18 @@
 
 <body>
 
+    <!-- BOTÃO TELA CHEIA -->
+    <button
+        id="fullscreenBtn"
+        class="fullscreen-btn"
+        onclick="toggleFullscreen()"
+        aria-label="Alternar tela cheia"
+        title="Tela cheia"
+    >⛶</button>
+
+    <!-- PARTÍCULAS DE FUNDO -->
+    <div id="sparkles" class="sparkles"></div>
+
     <!-- TELA INICIAL -->
     <section id="start" class="screen active">
 
@@ -90,6 +102,10 @@
 
                 <div id="progress" class="progress">
                     PERGUNTA 1 DE 6
+                </div>
+
+                <div class="progress-bar">
+                    <div id="progressFill" class="progress-fill"></div>
                 </div>
 
                 <h2 id="question" class="question">
